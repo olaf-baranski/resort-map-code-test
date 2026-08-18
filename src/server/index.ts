@@ -1,18 +1,39 @@
-import express from "express";
 import { fileURLToPath } from "node:url";
+import { parseArgs } from "./cli.js";
+import { loadMap } from "./map.js";
+import { loadGuests } from "./guests.js";
+import { ResortService } from "./resort.js";
+import { createApp } from "./app.js";
 
-const app = express();
-const port = 3000;
-const clientDirectory = fileURLToPath(new URL("../client", import.meta.url));
+const PORT = 3000;
+const clientDir = fileURLToPath(new URL("../client", import.meta.url));
 
-app.use(express.static(clientDirectory));
-
-app.listen(port, (error) => {
-  if (error) {
-    console.error("Failed to start Resort Map", error);
-    process.exitCode = 1;
-    return;
+async function main() {
+  let opts;
+  try {
+    opts = parseArgs(process.argv.slice(2));
+  } catch (err) {
+    console.error(`Startup error: ${(err as Error).message}`);
+    process.exit(1);
   }
 
-  console.log(`Resort Map is running at http://localhost:${port}`);
-});
+  let map, guests;
+  try {
+    [map, guests] = await Promise.all([
+      loadMap(opts.mapPath),
+      loadGuests(opts.bookingsPath),
+    ]);
+  } catch (err) {
+    console.error(`Startup error: ${(err as Error).message}`);
+    process.exit(1);
+  }
+
+  const service = new ResortService(map, guests);
+  const app = createApp(service, clientDir);
+
+  app.listen(PORT, () => {
+    console.log(`Resort Map is running at http://localhost:${PORT}`);
+  });
+}
+
+main();
