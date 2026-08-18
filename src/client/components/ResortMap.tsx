@@ -21,6 +21,7 @@ const PATH_SPRITES = {
 
 interface ResortMapProps {
   data: MapData;
+  onCabanaClick: (cabana: CabanaState) => void;
 }
 
 function getCabana(
@@ -71,19 +72,30 @@ function PathTile({
   );
 }
 
-function CabanaTile({ cabana }: { cabana: CabanaState }) {
-  const label = cabana.available ? "Available cabana" : "Unavailable cabana";
+function CabanaTile({
+  cabana,
+  onClick,
+}: {
+  cabana: CabanaState;
+  onClick: () => void;
+}) {
+  const label = cabana.available
+    ? `Available cabana ${cabana.id}`
+    : `Unavailable cabana ${cabana.id}`;
+
   return (
-    <div
-      className={`cabana-tile ${cabana.available ? "cabana-available" : "cabana-unavailable"}`}
-      title={label}
+    <button
+      type="button"
+      className={`cabana-btn ${cabana.available ? "cabana-available" : "cabana-unavailable"}`}
       aria-label={label}
+      title={label}
+      onClick={onClick}
     >
       <img src={cabanaImg} alt="" className="tile-img" draggable={false} />
       {!cabana.available && (
         <div className="cabana-booked-overlay" aria-hidden="true" />
       )}
-    </div>
+    </button>
   );
 }
 
@@ -93,12 +105,14 @@ function MapTile({
   col,
   tiles,
   cabanas,
+  onCabanaClick,
 }: {
   tile: Tile;
   row: number;
   col: number;
   tiles: Tile[][];
   cabanas: CabanaState[];
+  onCabanaClick: (cabana: CabanaState) => void;
 }) {
   switch (tile) {
     case "W": {
@@ -106,7 +120,7 @@ function MapTile({
       if (!cabana) return <div className="map-cell" />;
       return (
         <div className="map-cell">
-          <CabanaTile cabana={cabana} />
+          <CabanaTile cabana={cabana} onClick={() => onCabanaClick(cabana)} />
         </div>
       );
     }
@@ -151,7 +165,7 @@ function MapTile({
   }
 }
 
-export function ResortMap({ data }: ResortMapProps) {
+export function ResortMap({ data, onCabanaClick }: ResortMapProps) {
   const { width, height, tiles, cabanas } = data;
 
   return (
@@ -179,6 +193,7 @@ export function ResortMap({ data }: ResortMapProps) {
               col={colIdx}
               tiles={tiles}
               cabanas={cabanas}
+              onCabanaClick={onCabanaClick}
             />
           ))
         )}
