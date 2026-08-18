@@ -64,7 +64,7 @@ function PathTile({
     <img
       src={src}
       alt="path"
-      className="tile-img"
+      className="tile-img path-img"
       style={{ transform: `rotate(${rotation}deg)` }}
       draggable={false}
     />
