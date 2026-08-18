@@ -1,0 +1,237 @@
+/* ── Reset & base ─────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Georgia, "Times New Roman", serif;
+  background: #2c1a0e;
+  color: #3b2409;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 1.5rem 1rem;
+}
+
+/* ── App layout ───────────────────────────────────────────────────────────── */
+
+.app-main {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.app-header {
+  text-align: center;
+}
+
+.app-title {
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  color: #f5e6c8;
+  letter-spacing: 0.06em;
+  text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+/* ── Status states (loading / error) ──────────────────────────────────────── */
+
+.app-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60dvh;
+}
+
+.app-loading {
+  color: #f5e6c8;
+  font-size: 1.1rem;
+  opacity: 0.8;
+}
+
+.app-error {
+  color: #e8795a;
+  font-size: 1rem;
+  text-align: center;
+  max-width: 36ch;
+}
+
+/* ── Map wrapper & grid ───────────────────────────────────────────────────── */
+
+.resort-map-wrapper {
+  width: 100%;
+  border: 3px solid #6b4820;
+  border-radius: 4px;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.5),
+    inset 0 0 0 2px #a07040;
+  overflow: hidden;
+  background-image: url("../../assets/parchmentBasic.png");
+  background-size: cover;
+  background-position: center;
+}
+
+.resort-map-grid {
+  display: grid;
+  width: 100%;
+  aspect-ratio: var(--map-cols) / var(--map-rows);
+}
+
+/* ── Individual cells ─────────────────────────────────────────────────────── */
+
+.map-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /*
+   * Keep neighbouring path sprites visually connected.
+   * Path images extend slightly beyond their own grid cell.
+   */
+  overflow: visible;
+}
+
+.tile-img {
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+  display: block;
+}
+
+/* ── Paths ────────────────────────────────────────────────────────────────── */
+
+/*
+ * Path artwork contains a little transparent space around its edges.
+ * Making path sprites slightly larger removes visible seams between
+ * neighbouring # cells while preserving the grid layout.
+ */
+.path-img {
+  width: calc(100% + 3px);
+  height: calc(100% + 3px);
+  max-width: none;
+  max-height: none;
+  object-fit: contain;
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ── Pool ─────────────────────────────────────────────────────────────────── */
+
+.pool-cell {
+  position: relative;
+  background: hsl(210deg 60% 75% / 0.35);
+
+  /*
+   * Pool artwork must stay inside its own grid cell even though normal
+   * map cells allow path sprites to overlap slightly.
+   */
+  overflow: hidden;
+}
+
+.pool-texture {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.35;
+}
+
+.pool-icon {
+  position: relative;
+  z-index: 1;
+  width: 80%;
+  height: 80%;
+}
+
+/* ── Cabana tiles ─────────────────────────────────────────────────────────── */
+
+.cabana-tile {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Available: natural / slightly warm tint */
+
+.cabana-available {
+  background: hsl(40deg 60% 85% / 0.25);
+}
+
+/* Unavailable: grayscale + reduced opacity */
+
+.cabana-unavailable img {
+  filter: grayscale(100%);
+  opacity: 0.5;
+}
+
+.cabana-booked-overlay {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 4px,
+    hsl(0deg 0% 20% / 0.25) 4px,
+    hsl(0deg 0% 20% / 0.25) 6px
+  );
+  pointer-events: none;
+}
+
+/* ── Legend ───────────────────────────────────────────────────────────────── */
+
+.app-legend {
+  width: 100%;
+}
+
+.legend-list {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: #f5e6c8;
+}
+
+.legend-swatch {
+  display: inline-block;
+  width: 1.1em;
+  height: 1.1em;
+  border-radius: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+}
+
+.legend-available .legend-swatch {
+  background: hsl(40deg 60% 70%);
+}
+
+.legend-unavailable .legend-swatch {
+  background: hsl(0deg 0% 50%);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 3px,
+    hsl(0deg 0% 20% / 0.4) 3px,
+    hsl(0deg 0% 20% / 0.4) 4px
+  );
+}
