@@ -75,7 +75,7 @@ export function App() {
         };
       });
       setSelectedCabana(null);
-      setStatusMsg(`Cabana ${selectedCabana.id} booked successfully!`);
+      setStatusMsg(`Cabana booked successfully!`);
       return;
     }
 
